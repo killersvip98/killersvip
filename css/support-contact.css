@@ -1,0 +1,80 @@
+/* ===== Global Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #000000, #0f0f0f);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 15px;
+}
+
+/* ===== Page Title ===== */
+h1 {
+  margin-bottom: 35px;
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+  color: #ff9800;
+  text-align: center;
+  animation: fadeDown 1s ease;
+}
+
+/* ===== Card Design ===== */
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: #111111;
+  border-radius: 18px;
+  padding: 25px 22px;
+  margin-bottom: 25px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: fadeUp 1.1s ease;
+}
+
+/* Hover animation */
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 55px rgba(255, 152, 0, 0.25);
+}
+
+/* ===== Card Title ===== */
+.card h2 {
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  color: #ffffff;
+  border-left: 4px solid #ff9800;
+  padding-left: 12px;
+}
+
+/* ===== Details ===== */
+.detail {
+  margin-top: 12px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #e0e0e0;
+}
+
+/* Highlight text (numbers) */
+.detail span {
+  display: block;
+  background: rgba(255, 152, 0, 0.08);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255, 152, 0, 0.4);
+  color: #ffb74d;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeUp {
+  from

@@ -1,0 +1,114 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #000;
+  color: #fff;
+  padding: 20px;
+}
+
+/* Title */
+.title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: orange;
+  margin-bottom: 30px;
+  animation: fadeInDown 1.5s ease;
+}
+
+/* Card */
+.card {
+  max-width: 480px;
+  margin: auto;
+  background: #111;
+  border-radius: 18px;
+  padding: 30px;
+  border: 1px solid #222;
+  box-shadow: 0 0 15px rgba(255,165,0,0.25);
+  animation: fadeInUp 1.5s ease;
+}
+
+/* Description */
+.desc {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.desc span {
+  color: orange;
+  font-weight: 600;
+}
+
+/* Features */
+.features {
+  list-style: none;
+  display: grid;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.features li {
+  background: #1a1a1a;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #222;
+  transition: 0.3s;
+}
+
+.features li:hover {
+  border-color: orange;
+  box-shadow: 0 0 8px orange;
+}
+
+/* Join Buttons – theme friendly */
+.join-buttons {
+  display: grid;
+  gap: 15px;
+}
+
+.join-btn {
+  display: block;
+  padding: 14px;
+  border-radius: 30px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: orange;
+  border: 2px solid orange;
+  background: transparent;
+  transition: 0.3s;
+  animation: pulse 1.8s infinite;
+}
+
+.join-btn:hover {
+  background: orange;
+  color: #000;
+  box-shadow: 0 0 20px orange;
+  transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}

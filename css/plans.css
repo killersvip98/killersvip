@@ -1,0 +1,122 @@
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #000;
+  color: #fff;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  padding: 0 20px;
+}
+h1.center {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: orange;
+  animation: fadeInDown 1.5s ease-in-out;
+}
+
+/* Plan Card */
+.plan {
+  background: #111;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  border: 2px solid #222;
+  box-shadow: 0 0 10px #000;
+  transition: all 0.4s ease-in-out;
+  animation: fadeInUp 1.5s ease;
+}
+
+.plan:hover {
+  border-color: orange;
+  box-shadow: 0 0 15px orange, 0 0 30px orange;
+  transform: scale(1.03);
+}
+
+.plan h2 {
+  margin-bottom: 20px;
+  color: #fff;
+  text-shadow: 0 0 5px orange;
+}
+
+/* Highlight Plan */
+.plan.highlight {
+  border-color: orange;
+  box-shadow: 0 0 20px orange;
+}
+
+/* Button Style */
+.btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 25px;
+  background: orange;
+  color: #000;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 30px;
+  box-shadow: 0 0 10px orange;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0 20px orange;
+  transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+/* Free Plans Title */
+.free-title {
+  margin-top: 70px;
+  font-size: 2.5rem;
+  color: orange;
+  text-align: center;
+  animation: fadeInDown 1.5s ease-in-out;
+  text-shadow: none;
+}
+
+/* Free Plan Card */
+.free-plan {
+  border: 2px dashed orange;
+  background: #0d0d0d;
+  box-shadow: 0 0 15px rgba(255,165,0,0.3);
+}
+
+/* Free Button */
+.free-btn {
+  background: transparent;
+  color: orange;
+  border: 2px solid orange;
+  box-shadow: none;
+}
+
+.free-btn:hover {
+  background: orange;
+  color: #000;
+  box-shadow: 0 0 20px orange;
+}
