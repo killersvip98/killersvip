@@ -5,7 +5,7 @@ function copyText(text) {
 
 
 function joinVipWhatsApp() {
-  window.location.href = "https://chat.whatsapp.com/JuGY8V91TpQInvIsae0Duc";
+  window.location.href = "https://chat.whatsapp.com/G5jhwdSc8AfA8S1DymBPzO?mode=gi_t";
 }
 
 function joinVipTelegram() {
@@ -18,4 +18,5 @@ function sendReceiptWhatsApp() {
 
 function sendReceiptTelegram() {
   window.location.href = "https://t.me/Dila_vip1";
+
 }
