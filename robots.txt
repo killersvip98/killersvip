@@ -1,4 +1,4 @@
 User-agent:*
 Allow:/
 
-Sitemap:https://killersvip.com/sitemap.xml
+Sitemap: https://killersvip.com/sitemap.xml
