@@ -130,14 +130,6 @@
         });
     }
 
-    /* ── Referral Tracking ── */
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref');
-    if (ref) {
-        localStorage.setItem('referral_id', ref);
-        console.log('Referral ID saved:', ref);
-    }
-
     /* ── Active nav link ── */
     const page = location.pathname.split('/').pop() || 'index.html';
     document.querySelectorAll('.nav-link').forEach(a => {
