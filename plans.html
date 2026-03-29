@@ -18,6 +18,7 @@
 
 <body>
 
+
   <!-- HEADER -->
   <header id="site-header">
     <div class="hdr-inner">
@@ -65,13 +66,12 @@
             <li><i class="fas fa-check"></i> Profit Target Alerts</li>
           </ul>
           <div class="pc-price">
-            <span class="amt">40</span><span class="cur"> USDT</span>
+            <span class="amt">30</span><span class="cur"> USDT</span>
             <span class="per">/ Lifetime</span>
           </div>
-          <a href="plan-crypto.html" class="btn btn-primary">View Details <i class="fas fa-arrow-right"></i></a>
+          <a href="plan-crypto.html" class="btn btn-primary">View Details <i
+              class="fas fa-arrow-right"></i></a>
         </div>
-
-       
 
         <!-- FOREX -->
         <div class="pc">
@@ -90,10 +90,11 @@
             <span class="amt">40</span><span class="cur"> USDT</span>
             <span class="per">/ Lifetime</span>
           </div>
-          <a href="plan-forex.html" class="btn btn-primary">View Details <i class="fas fa-arrow-right"></i></a>
+          <a href="plan-forex.html" class="btn btn-primary">View Details <i
+              class="fas fa-arrow-right"></i></a>
         </div>
 
-         <!-- ALL-IN-ONE (star) -->
+        <!-- ALL-IN-ONE (star) -->
         <div class="pc pc-star">
           <div class="ribbon"><i class="fas fa-fire"></i> Most Popular</div>
           <span class="pc-badge">ALL-IN-ONE</span>
@@ -111,7 +112,8 @@
             <span class="amt">60</span><span class="cur"> USDT</span>
             <span class="per">/ Lifetime</span>
           </div>
-          <a href="plan-all.html" class="btn btn-primary pulse">View Details <i class="fas fa-arrow-right"></i></a>
+          <a href="plan-all.html" class="btn btn-primary pulse">View Details <i
+              class="fas fa-arrow-right"></i></a>
         </div>
 
       </div>
@@ -152,10 +154,12 @@
         <p>Sri Lanka's #1 Crypto &amp; Forex trading signals platform.</p>
         <div class="ft-socials">
           <a href="#" class="ft-soc"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.facebook.com/share/172CGtJvBn/?mibextid=wwXlfr" class="ft-soc"><i class="fab fa-facebook-f"></i></a>
-          <a href="https://www.tiktok.com/@dila_vip14?_r=1&_t=ZS-94NkXUPGFsq" class="ft-soc"><i class="fab fa-tiktok"></i></a>
-          <a href="#" class="ft-soc"><i class="fab fa-telegram-plane"></i></a>
-          <a href="#" class="ft-soc"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://www.facebook.com/share/172CGtJvBn/?mibextid=wwXlfr" class="ft-soc"><i
+              class="fab fa-facebook-f"></i></a>
+          <a href="https://www.tiktok.com/@dila_vip14?_r=1&_t=ZS-94NkXUPGFsq" class="ft-soc"><i
+              class="fab fa-tiktok"></i></a>
+          <a href="https://t.me/+Vuazn_wFHqpkYjFl" class="ft-soc"><i class="fab fa-telegram-plane"></i></a>
+          <a href="https://wa.me/94729190799" class="ft-soc"><i class="fab fa-whatsapp"></i></a>
         </div>
       </div>
       <div class="ft-col">
@@ -178,7 +182,91 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/killers.js"></script>
+
+  <script>
+    // ═══════════ AUTH GATE & DYNAMIC PRICING ═══════════
+    async function initPlansPage() {
+      // 1. Check if user is logged in
+      const session = await checkSession();
+      if (!session) {
+        // Not logged in — redirect to login page
+        window.location.href = 'https://killersvip.com/login.html?redirect=plans.html';
+        return;
+      }
+
+      // 2. Update nav for logged-in user
+      const authLink = document.querySelector('a[href="login.html"]');
+      if (authLink) {
+        authLink.href = 'https://killersvip.com/dashboard.html';
+        authLink.innerHTML = '<i class="fas fa-user"></i> Dashboard';
+      }
+
+      // 3. Get user's promo code from DB
+      let promoCode = 'KILLERS10'; // default
+      try {
+        const { data: userData } = await window.supabaseClient
+          .from('users')
+          .select('promo_code_used')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (userData && userData.promo_code_used) {
+          promoCode = userData.promo_code_used;
+        }
+      } catch (e) {
+        console.error("Error fetching user promo code:", e);
+      }
+
+      // 4. Fetch promo code details (prices + bank details)
+      let promoData = null;
+      try {
+        const { data } = await window.supabaseClient
+          .from('promo_codes')
+          .select('*')
+          .eq('code', promoCode)
+          .single();
+        promoData = data;
+      } catch (e) {
+        console.error("Error fetching promo data:", e);
+      }
+
+      // Fallback to default promo if needed
+      if (!promoData) {
+        try {
+          const { data } = await window.supabaseClient
+            .from('promo_codes')
+            .select('*')
+            .eq('code', 'KILLERS10')
+            .single();
+          promoData = data;
+        } catch (e) {
+          console.error("Error fetching default promo:", e);
+        }
+      }
+
+      if (promoData) {
+        // 5. Update prices in the UI
+        document.querySelectorAll('.pc').forEach(card => {
+          const title = card.querySelector('h2').textContent.trim();
+          const amtEl = card.querySelector('.amt');
+          if (!amtEl) return;
+
+          if (title === 'Crypto VIP') amtEl.textContent = promoData.crypto_price;
+          if (title === 'Forex VIP') amtEl.textContent = promoData.forex_price;
+          if (title === 'All-in-One VIP') amtEl.textContent = promoData.all_price;
+        });
+      }
+
+      // 6. Show the page content (remove loading state)
+      document.body.classList.add('plans-loaded');
+    }
+
+    document.addEventListener('DOMContentLoaded', initPlansPage);
+  </script>
 </body>
 
 </html>

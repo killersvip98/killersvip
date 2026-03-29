@@ -27,57 +27,193 @@
       </a>
 
       <div class="card-head">
-        <h1>Create Account</h1>
-        <p>Register to access your VIP trading signals</p>
+        <h1>Join the VIP</h1>
+        <p>Register using Google and enter your promo code</p>
       </div>
 
       <form class="login-form" id="registerForm" onsubmit="return false;">
+        <!-- Promo Code Section -->
         <div class="field">
-          <label for="reg-name"><i class="fas fa-user"></i> Full Name</label>
-          <input type="text" id="reg-name" placeholder="Your full name" autocomplete="name" required>
-        </div>
-        <div class="field">
-          <label for="reg-email"><i class="fas fa-envelope"></i> Email Address</label>
-          <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" required>
-        </div>
-        <div class="field">
-          <label for="reg-pass"><i class="fas fa-lock"></i> Password</label>
-          <div class="pass-row">
-            <input type="password" id="reg-pass" placeholder="Create a password" required>
-            <button type="button" class="eye-btn" onclick="togglePass('reg-pass','eye1')" aria-label="Toggle">
-              <i class="fas fa-eye" id="eye1"></i>
-            </button>
+          <label for="promo-code"><i class="fas fa-ticket-alt"></i> Promo Code (Required)</label>
+          <div class="promo-row">
+            <input type="text" id="promo-code" placeholder="Enter code (e.g. AMILA10)" required autocomplete="off">
+            <button type="button" class="btn-check" id="checkCodeBtn"><i class="fas fa-check"></i> Check</button>
           </div>
+          <span id="promo-msg" class="promo-msg">Code not checked</span>
         </div>
-        <div class="field">
-          <label for="reg-confirm"><i class="fas fa-lock"></i> Confirm Password</label>
-          <div class="pass-row">
-            <input type="password" id="reg-confirm" placeholder="Repeat your password" required>
-            <button type="button" class="eye-btn" onclick="togglePass('reg-confirm','eye2')" aria-label="Toggle">
-              <i class="fas fa-eye" id="eye2"></i>
-            </button>
-          </div>
-        </div>
-        <button type="submit" class="btn-login">
-          <i class="fas fa-user-plus"></i> Register
+
+        <button type="button" class="btn-default-code" id="useDefaultCodeBtn">
+          <i class="fas fa-star"></i> Use Default Code (KILLERS10)
+        </button>
+
+        <!-- Google Login Button -->
+        <button type="button" class="btn-login google-btn" id="googleSignupBtn" disabled>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Icon" width="18">
+          Sign Up with Google
+        </button>
+
+        <!-- Complete Registration Button (For users authenticated but missing promo code) -->
+        <button type="button" class="btn-login" id="completeRegistrationBtn" style="display: none; background: var(--success); color: white;" disabled>
+          <i class="fas fa-check-circle"></i> Complete Registration
         </button>
       </form>
 
       <div class="card-foot">
         <p>Already have an account? <a href="login.html">Login here</a></p>
+        <div class="legal-links-small">
+          <a href="privacy-policy.html">Privacy Policy</a> &bull; <a href="terms-conditions.html">Terms & Conditions</a>
+        </div>
         <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
       </div>
     </div>
   </div>
 
+  <!-- Include Supabase Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/security.js"></script>
+  <script src="js/auth.js"></script>
   <script>
-    function togglePass(id, iconId) {
-      const input = document.getElementById(id);
-      const icon = document.getElementById(iconId);
-      const show = input.type === 'password';
-      input.type = show ? 'text' : 'password';
-      icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    const promoInp = document.getElementById('promo-code');
+    const checkBtn = document.getElementById('checkCodeBtn');
+    const msgSpan = document.getElementById('promo-msg');
+    const dftBtn = document.getElementById('useDefaultCodeBtn');
+    const googleBtn = document.getElementById('googleSignupBtn');
+    const completeBtn = document.getElementById('completeRegistrationBtn');
+
+    let isValid = false;
+    let isCompleting = false;
+
+    // Session Check on Load
+    (async function () {
+      const session = await checkSession();
+      if (session) {
+        const { data: dbUser } = await window.supabaseClient
+          .from('users')
+          .select('promo_code_used')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (dbUser && dbUser.promo_code_used) {
+          // Already fully registered — go to dashboard
+          const savedRedirect = localStorage.getItem('login_redirect');
+          if (savedRedirect) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            window.location.href = 'https://killersvip.com/' + savedRedirect;
+          } else {
+            window.location.href = 'https://killersvip.com/dashboard.html';
+          }
+        } else {
+          // Logged in but missing promo code — show complete registration form
+          isCompleting = true;
+          googleBtn.style.display = 'none';
+          completeBtn.style.display = 'flex';
+          completeBtn.disabled = true; // wait for valid code
+        }
+      }
+    })();
+
+    // 1. Auto-apply URL Code & Ref
+    const urlParams = new URLSearchParams(window.location.search);
+    const codeFromUrl = urlParams.get('code');
+    const refFromUrl = urlParams.get('ref');
+
+    if (refFromUrl) {
+      localStorage.setItem('referral_id', refFromUrl);
     }
+
+    if (codeFromUrl) {
+      promoInp.value = codeFromUrl;
+      validateCode(codeFromUrl);
+    }
+
+    // 2. Validate Code
+    async function validateCode(code) {
+      if (!code) return;
+      msgSpan.className = 'promo-msg loading';
+      msgSpan.textContent = 'Checking code...';
+
+      const { data, error } = await window.supabaseClient
+        .from('promo_codes')
+        .select('code')
+        .eq('code', code.toUpperCase())
+        .single();
+
+      if (data) {
+        isValid = true;
+        msgSpan.className = 'promo-msg success';
+        msgSpan.textContent = '✓ Promo code is valid!';
+        googleBtn.disabled = false;
+        completeBtn.disabled = false;
+        promoInp.value = code.toUpperCase();
+      } else {
+        isValid = false;
+        msgSpan.className = 'promo-msg error';
+        msgSpan.textContent = '✗ Invalid promo code';
+        googleBtn.disabled = true;
+        completeBtn.disabled = true;
+      }
+    }
+
+    checkBtn.addEventListener('click', () => validateCode(promoInp.value));
+
+    // 3. Use Default Code
+    dftBtn.addEventListener('click', () => {
+      promoInp.value = 'KILLERS10';
+      validateCode('KILLERS10');
+    });
+
+    // 4. Google Signup Click
+    googleBtn.addEventListener('click', async () => {
+      if (!isValid) return window.showToast('Please enter a valid promo code first!', 'warning');
+      // Save promo code in local storage as a backup for session-based referral
+      localStorage.setItem('referral_promo', promoInp.value);
+      await signInWithGoogle(promoInp.value);
+    });
+
+    // 5. Complete Registration Click (If already OAuth logged in)
+    completeBtn.addEventListener('click', async () => {
+      if (!isValid) return window.showToast('Please enter a valid promo code first!', 'warning');
+      const session = await checkSession();
+      if(!session) return;
+      
+      const refId = localStorage.getItem('referral_id');
+      const updates = {
+          promo_code_used: promoInp.value,
+          status: 'Registered'
+      };
+      if (refId) updates.referred_by = refId;
+      
+      const { error } = await window.supabaseClient.from('users').update(updates).eq('id', session.user.id);
+      
+      if(error) {
+          window.showToast('Error completing setup: ' + error.message, 'error');
+      } else {
+          if (refId) {
+              // Award referral points
+              const { data: refUser } = await window.supabaseClient.from('users').select('id, referral_points').eq('display_id', refId).single();
+              if (refUser) {
+                  await window.supabaseClient.from('users').update({
+                      referral_points: (refUser.referral_points || 0) + 10
+                  }).eq('id', refUser.id);
+              }
+              // Clear referral logic so it doesn't trigger again
+              localStorage.removeItem('referral_id');
+          }
+          const nextPage = localStorage.getItem('login_redirect') || 'dashboard.html';
+          localStorage.removeItem('login_redirect');
+          window.location.href = 'https://killersvip.com/' + nextPage;
+      }
+    });
+
+    // Handle Input Event to reset validation status
+    promoInp.addEventListener('input', () => {
+      isValid = false;
+      googleBtn.disabled = true;
+      completeBtn.disabled = true;
+      msgSpan.className = 'promo-msg';
+      msgSpan.textContent = 'Click Check to verify code';
+    });
   </script>
 </body>
 

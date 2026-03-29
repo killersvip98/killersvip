@@ -28,45 +28,93 @@
 
       <div class="card-head">
         <h1>Welcome Back</h1>
-        <p>Sign in to access your VIP trading signals</p>
+        <p>Login to your VIP dashboard</p>
       </div>
 
-      <form class="login-form" id="loginForm" onsubmit="return false;">
-        <div class="field">
-          <label for="login-email"><i class="fas fa-envelope"></i> Email Address</label>
-          <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" required>
-        </div>
-        <div class="field">
-          <label for="login-pass"><i class="fas fa-lock"></i> Password</label>
-          <div class="pass-row">
-            <input type="password" id="login-pass" placeholder="Enter your password" autocomplete="current-password"
-              required>
-            <button type="button" id="togglePass" class="eye-btn" aria-label="Toggle password visibility">
-              <i class="fas fa-eye" id="eyeIcon"></i>
-            </button>
-          </div>
-        </div>
-        <button type="submit" class="btn-login" id="submitLogin">
-          <i class="fas fa-sign-in-alt"></i> Sign In
+      <div class="login-form">
+        <!-- Google Login Button -->
+        <button type="button" class="btn-login google-btn" id="googleLoginBtn">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Icon" width="18">
+          Login with Google
         </button>
-      </form>
+      </div>
 
       <div class="card-foot">
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
+        <p>Don't have an account? <a href="register.html">Sign up here</a></p>
         <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Home</a>
       </div>
     </div>
   </div>
 
+  <!-- Include Supabase Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+
+  <script src="js/security.js"></script>
   <script>
-    const toggle = document.getElementById('togglePass');
-    const passInput = document.getElementById('login-pass');
-    const eyeIcon = document.getElementById('eyeIcon');
-    toggle.addEventListener('click', () => {
-      const show = passInput.type === 'password';
-      passInput.type = show ? 'text' : 'password';
-      eyeIcon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    const googleBtn = document.getElementById('googleLoginBtn');
+
+    // Check if there's a redirect URL from a protected page
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUrl = urlParams.get('redirect');
+    if (redirectUrl) {
+      localStorage.setItem('login_redirect', redirectUrl);
+    }
+
+    googleBtn.addEventListener('click', async () => {
+      // Login always redirects back to login.html so we can check registration status
+      try {
+        const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: 'https://killersvip.com/login.html',
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'consent',
+            }
+          }
+        });
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error signing in:', error.message);
+        alert('Login Failed: ' + error.message);
+      }
     });
+
+    // Handle session check on page load (including after OAuth redirect)
+    (async function () {
+      const session = await checkSession();
+      if (session) {
+        // User has a Google session — now check if they're properly registered
+        try {
+          const { data: dbUser } = await window.supabaseClient
+            .from('users')
+            .select('promo_code_used')
+            .eq('id', session.user.id)
+            .single();
+
+          if (dbUser && dbUser.promo_code_used) {
+            // ✅ Fully registered user — proceed to redirect or dashboard
+            const savedRedirect = localStorage.getItem('login_redirect');
+            if (savedRedirect) {
+              sessionStorage.removeItem('redirectAfterLogin');
+              window.location.href = 'https://killersvip.com/' + savedRedirect;
+            } else {
+              window.location.href = 'https://killersvip.com/dashboard.html';
+            }
+          } else {
+            // ❌ User has Google account but NOT registered with promo code
+            // Redirect to register page to complete registration
+            window.location.href = 'https://killersvip.com/register.html';
+          }
+        } catch (e) {
+          console.error('Error checking registration:', e);
+          // If DB check fails, redirect to register as safety measure
+          window.location.href = 'https://killersvip.com/register.html';
+        }
+      }
+    })();
   </script>
 </body>
 
