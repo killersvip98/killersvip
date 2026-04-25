@@ -7,11 +7,11 @@ const VIP_CODES = {
         branch: "MATALE"
     },
     "LS2000": {
-        binanceId: "835213410",
-        bankName: "SAMPATH BANK PLC",
-        accName: "N.G.L.S.K Nugekotuwa",
-        accNumber: "109055269854",
-        branch: "Dambulla"
+        binanceId: "789423226",
+        bankName: "SAMPATH BANK",
+        accName: "G.W.D.Lakshani",
+        accNumber: "107256130375",
+        branch: "Ambalangoda"
     },
     "DE3000": {
         binanceId: "817185426",
