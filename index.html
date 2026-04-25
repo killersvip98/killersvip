@@ -32,6 +32,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/animate.index.css">
+  <link rel="stylesheet" href="css/vip.css">
 </head>
 
 <body>
@@ -91,7 +92,8 @@
         <a href="plans.html" class="btn btn-primary" id="hero-plans-btn"><i class="fas fa-crown"></i> View Plans</a>
         <a href="support-contact.html" class="btn btn-ghost" id="hero-contact-btn"><i class="fas fa-headset"></i> Contact Us</a>
       </div>
-    </div>
+      
+     
    
   </section>
 
@@ -110,6 +112,15 @@
       </div>
     </div>
   </section>
+
+  <!-- VIP MEMBER LOGIN CARD -->
+      <div class="vip-login-card">
+        <h3><i class="fas fa-gem"></i> VIP Member</h3>
+        <p>Exclusive access for our VIP members. Click below to login with your VIP CODE.</p>
+        <button id="vip-member-login-btn" class="btn-vip">
+          <i class="fas fa-sign-in-alt"></i> LOGIN
+        </button>
+      </div>
 
   <!-- ═══════════ FOOTER ═══════════ -->
   <footer class="site-footer">
@@ -145,6 +156,20 @@
     </div>
   </footer>
 
+  <!-- VIP CODE Modal -->
+  <div id="vip-login-modal" class="vip-modal">
+    <div class="vip-modal-content">
+      <span class="vip-close">&times;</span>
+      <h2>VIP CODE</h2>
+      <p>Enter your VIP CODE to access exclusive plans.</p>
+      <input type="text" id="vip-referral-input" placeholder="e.g. VIP888" autocomplete="off">
+      <button id="vip-submit-btn">Submit</button>
+      <p id="vip-error" class="vip-error-msg"></p>
+    </div>
+  </div>
+
+  <script src="js/vip-config.js"></script>
+  <script src="js/vip-login.js"></script>
   <script src="js/killers.js"></script>
 </body>
 
